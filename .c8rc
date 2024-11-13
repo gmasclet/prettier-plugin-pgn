@@ -1,0 +1,6 @@
+{
+  "reporter": ["text", "html"],
+  "all": true,
+  "src": "src",
+  "exclude": ["dist", "test"]
+}
