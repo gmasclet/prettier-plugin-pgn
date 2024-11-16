@@ -1,5 +1,9 @@
 import {Parser} from 'prettier';
-import {ASTNode} from './types';
+import {ASTNode} from './astNode';
+import {tokenize} from './tokenize';
+import {parseLeaves} from './parseLeaves';
+import {parseSections} from './parseSections';
+import {parseGames} from './parseGames';
 
 export class PgnParser implements Parser<ASTNode> {
   get astFormat(): string {
@@ -7,7 +11,16 @@ export class PgnParser implements Parser<ASTNode> {
   }
 
   parse(text: string): ASTNode {
-    return {content: text, start: 0, end: 0};
+    const tokens = tokenize(text);
+    const leaves = parseLeaves(tokens);
+    const sections = parseSections(leaves);
+    const games = parseGames(sections);
+    return {
+      type: 'root',
+      games: games,
+      start: games.length === 0 ? 0 : games[0].start,
+      end: games.length === 0 ? 0 : games[games.length - 1].end
+    };
   }
 
   locStart(node: ASTNode): number {

@@ -11,4 +11,16 @@ describe('Index', () => {
 
     assert.strictEqual(result, '');
   });
+
+  it('Should format a simple PGN text', async () => {
+    const result = await prettier.format(
+      '[Event "F/S Return Match"] 1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *',
+      {
+        parser: 'pgn-parse',
+        plugins: ['./dist/index.js']
+      }
+    );
+
+    assert.strictEqual(result, '[Event "F/S Return Match"]\n\n1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 *');
+  });
 });

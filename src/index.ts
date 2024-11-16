@@ -1,6 +1,6 @@
 import {PgnParser} from './pgnParser';
 import {PgnPrinter} from './pgnPrinter';
-import {Options} from './types';
+import {Options} from './options';
 
 export const options: Options = {};
 
