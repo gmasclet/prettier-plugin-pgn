@@ -1,3 +1,4 @@
+import {ParserError} from './parserError';
 import {Token, TokenType} from './token';
 
 export function tokenize(text: string): Token[] {
@@ -21,7 +22,7 @@ function isWhitespace(character: string): boolean {
 }
 
 function parseToken(text: string, index: number): Token {
-  const type = findTokenType(text[index]);
+  const type = findTokenType(text, index);
   switch (type) {
     case 'period':
     case 'asterisk':
@@ -48,7 +49,8 @@ function parseToken(text: string, index: number): Token {
   }
 }
 
-function findTokenType(character: string): Exclude<TokenType, 'integer'> {
+function findTokenType(text: string, index: number): Exclude<TokenType, 'integer'> {
+  const character = text[index];
   switch (character) {
     case '.':
       return 'period';
@@ -74,7 +76,7 @@ function findTokenType(character: string): Exclude<TokenType, 'integer'> {
       if (/[0-9a-zA-Z]/.test(character)) {
         return 'symbol';
       }
-      throw new Error(`Unknown token type "${character}"`);
+      throw new ParserError(`Unknown token type "${character}"`, {start: index});
   }
 }
 

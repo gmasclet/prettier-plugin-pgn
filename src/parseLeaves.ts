@@ -1,4 +1,5 @@
 import {LeafNode} from './astNode';
+import {ParserError} from './parserError';
 import {AsteriskToken, SymbolToken, Token} from './token';
 
 export function parseLeaves(tokens: Token[]): LeafNode[] {
@@ -26,23 +27,21 @@ function parseLeaf(tokens: Token[], index: number): {node: LeafNode; length: num
       return parseSingleTokenNode(token);
 
     default:
-      throw new Error(`Unexpected token type "${token.type}"`);
+      throw new ParserError(`Unexpected token type "${token.type}"`, token);
   }
 }
 
 function parseTagPair(tokens: Token[], index: number): {node: LeafNode; length: number} {
   if (tokens.length < index + 2) {
-    throw new Error('Unexpected partial tag pair');
+    throw new ParserError('Unexpected partial tag pair', tokens[index]);
   }
   const name = tokens[index + 1];
   if (name.type !== 'symbol') {
-    throw new Error(`Unexpected token ${name.type} at index ${name.start}, was expecting a symbol`);
+    throw new ParserError(`Unexpected token ${name.type}, was expecting a symbol`, name);
   }
   const value = tokens[index + 2];
   if (value.type !== 'string') {
-    throw new Error(
-      `Unexpected token ${value.type} at index ${value.start}, was expecting a string`
-    );
+    throw new ParserError(`Unexpected token ${value.type}, was expecting a string`, value);
   }
   const hasRightBracket = tokens.length > index + 3 && tokens[index + 3].type === 'rightBracket';
   const lastToken = hasRightBracket ? tokens[index + 3] : value;
@@ -65,11 +64,11 @@ function parseNumberedMove(tokens: Token[], startIndex: number): {node: LeafNode
     index++;
   }
   if (index >= tokens.length) {
-    throw new Error('Unexpected partial move number');
+    throw new ParserError('Unexpected partial move number', number);
   }
   const move = tokens[index];
   if (move.type !== 'symbol' || isGameTermination(move)) {
-    throw new Error(`Unexpected token ${move.type} at index ${move.start}, was expecting a symbol`);
+    throw new ParserError(`Unexpected token ${move.type}, was expecting a symbol`, move);
   }
   return {
     node: {
