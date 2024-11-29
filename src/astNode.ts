@@ -1,5 +1,5 @@
 export type ASTNodeType =
-  | 'root'
+  | 'file'
   | 'game'
   | 'tagPairSection'
   | 'moveTextSection'
@@ -10,14 +10,14 @@ export type ASTNodeType =
   | 'halfMove'
   | 'gameTermination';
 
-export type ASTNode = RootNode | GameNode | SectionNode | MoveNode | LeafNode;
+export type ASTNode = FileNode | GameNode | SectionNode | MoveNode | LeafNode;
 
 export type SectionNode = TagPairSectionNode | MoveTextSectionNode;
 
 export type LeafNode = TagPairNode | HalfMoveNode | GameTerminationNode;
 
-export interface RootNode extends BaseNode {
-  type: 'root';
+export interface FileNode extends BaseNode {
+  type: 'file';
   games: GameNode[];
 }
 

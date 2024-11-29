@@ -1,37 +1,20 @@
 import {ParserError} from './parserError';
 import {Token, TokenType} from './token';
 
-export function tokenize(text: string): Token[] {
-  const tokens: Token[] = [];
-  let index = 0;
-  while (index < text.length) {
-    const character = text[index];
-    if (isWhitespace(character)) {
-      index++;
-      continue;
-    }
-    const token = parseToken(text, index);
-    tokens.push(token);
-    index = token.end;
+export function parseToken(text: string, index: number): Token | undefined {
+  while (index < text.length && isWhitespace(text[index])) {
+    index++;
   }
-  return tokens;
-}
-
-function isWhitespace(character: string): boolean {
-  return /\s/.test(character);
-}
-
-function parseToken(text: string, index: number): Token {
+  if (index >= text.length) {
+    return undefined;
+  }
   const type = findTokenType(text, index);
   switch (type) {
     case 'period':
-    case 'asterisk':
     case 'leftBracket':
     case 'rightBracket':
     case 'leftParenthesis':
     case 'rightParenthesis':
-    case 'leftAngleBracket':
-    case 'rightAngleBracket':
       return {
         type: type,
         start: index,
@@ -49,13 +32,18 @@ function parseToken(text: string, index: number): Token {
   }
 }
 
-function findTokenType(text: string, index: number): Exclude<TokenType, 'integer'> {
+function isWhitespace(character: string): boolean {
+  return /\s/.test(character);
+}
+
+function findTokenType(
+  text: string,
+  index: number
+): Exclude<TokenType, 'integer' | 'gameTermination'> {
   const character = text[index];
   switch (character) {
     case '.':
       return 'period';
-    case '*':
-      return 'asterisk';
     case '[':
       return 'leftBracket';
     case ']':
@@ -64,16 +52,12 @@ function findTokenType(text: string, index: number): Exclude<TokenType, 'integer
       return 'leftParenthesis';
     case ')':
       return 'rightParenthesis';
-    case '<':
-      return 'leftAngleBracket';
-    case '>':
-      return 'rightAngleBracket';
     case '"':
       return 'string';
     case '$':
       return 'nag';
     default:
-      if (/[0-9a-zA-Z]/.test(character)) {
+      if (/[*0-9a-zA-Z]/.test(character)) {
         return 'symbol';
       }
       throw new ParserError(`Unknown token type "${character}"`, {start: index});
@@ -125,13 +109,15 @@ function parseNag(text: string, startIndex: number): Token {
 }
 
 function parseSymbol(text: string, startIndex: number): Token {
-  let index = startIndex + 1;
-  while (index < text.length && /[0-9a-zA-Z_+#=:/-]/.test(text[index])) {
-    index++;
-  }
-
-  const value = text.substring(startIndex, index);
-  if (/^[0-9]+$/.test(value)) {
+  const value = parseSymbolValue(text, startIndex);
+  if (['*', '1-0', '0-1', '1/2-1/2'].includes(value)) {
+    return {
+      type: 'gameTermination',
+      value: value,
+      start: startIndex,
+      end: startIndex + value.length
+    };
+  } else if (/^[0-9]+$/.test(value)) {
     return {
       type: 'integer',
       value: Number.parseInt(value),
@@ -146,4 +132,15 @@ function parseSymbol(text: string, startIndex: number): Token {
       end: startIndex + value.length
     };
   }
+}
+
+function parseSymbolValue(text: string, startIndex: number): string {
+  if (text[startIndex] === '*') {
+    return text[startIndex];
+  }
+  let index = startIndex + 1;
+  while (index < text.length && /[0-9a-zA-Z_+#=:/-]/.test(text[index])) {
+    index++;
+  }
+  return text.substring(startIndex, index);
 }

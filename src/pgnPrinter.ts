@@ -11,7 +11,7 @@ export class PgnPrinter implements Printer<ASTNode> {
   ): Doc {
     const node = path.node;
     switch (node.type) {
-      case 'root':
+      case 'file':
         return join(hardline, path.map(print, 'games'));
 
       case 'game':

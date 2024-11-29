@@ -1,51 +1,34 @@
-export type TokenType =
+export type TokenType = BaseTokenType | StringTokenType | NumberTokenType;
+
+type BaseTokenType =
   | 'period'
-  | 'asterisk'
   | 'leftBracket'
   | 'rightBracket'
   | 'leftParenthesis'
-  | 'rightParenthesis'
-  | 'leftAngleBracket'
-  | 'rightAngleBracket'
-  | 'string'
-  | 'symbol'
-  | 'integer'
-  | 'nag';
+  | 'rightParenthesis';
 
-export type Token = SimpleToken | AsteriskToken | StringToken | SymbolToken | NumberToken;
+type StringTokenType = 'string' | 'symbol' | 'gameTermination';
 
-export interface SimpleToken extends BaseToken {
-  type:
-    | 'period'
-    | 'leftBracket'
-    | 'rightBracket'
-    | 'leftParenthesis'
-    | 'rightParenthesis'
-    | 'leftAngleBracket'
-    | 'rightAngleBracket';
-}
+type NumberTokenType = 'integer' | 'nag';
 
-export interface AsteriskToken extends BaseToken {
-  type: 'asterisk';
-}
+export type Token<T extends TokenType = TokenType> = T extends BaseTokenType
+  ? BaseToken<T>
+  : T extends StringTokenType
+    ? StringToken<T>
+    : T extends NumberTokenType
+      ? NumberToken<T>
+      : never;
 
-export interface StringToken extends BaseToken {
-  type: 'string';
+interface StringToken<T> extends BaseToken<T> {
   value: string;
 }
 
-export interface SymbolToken extends BaseToken {
-  type: 'symbol';
-  value: string;
-}
-
-export interface NumberToken extends BaseToken {
-  type: 'integer' | 'nag';
+interface NumberToken<T> extends BaseToken<T> {
   value: number;
 }
 
-interface BaseToken {
-  type: TokenType;
+interface BaseToken<T> {
+  type: T;
   start: number;
   end: number;
 }

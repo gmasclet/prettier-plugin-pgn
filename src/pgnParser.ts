@@ -1,10 +1,8 @@
 import {Parser} from 'prettier';
 import {ASTNode} from './astNode';
-import {tokenize} from './tokenize';
-import {parseLeaves} from './parseLeaves';
-import {parseSections} from './parseSections';
-import {parseGames} from './parseGames';
 import {ParserError} from './parserError';
+import {parseFile} from './parseFile';
+import {Tokenizer} from './tokenizer';
 
 export class PgnParser implements Parser<ASTNode> {
   get astFormat(): string {
@@ -13,16 +11,7 @@ export class PgnParser implements Parser<ASTNode> {
 
   parse(text: string): ASTNode {
     try {
-      const tokens = tokenize(text);
-      const leaves = parseLeaves(tokens);
-      const sections = parseSections(leaves);
-      const games = parseGames(sections);
-      return {
-        type: 'root',
-        games: games,
-        start: games.length === 0 ? 0 : games[0].start,
-        end: games.length === 0 ? 0 : games[games.length - 1].end
-      };
+      return parseFile(new Tokenizer(text));
     } catch (error) {
       throw error instanceof ParserError ? error.convertToPrettierError(text) : error;
     }
