@@ -50,7 +50,7 @@ function parseTagPairSection(tokens: Tokenizer): TagPairSectionNode | undefined 
 
 function parseMoveTextSection(tokens: Tokenizer): MoveTextSectionNode | undefined {
   let moveNumber = 1;
-  const moves = repeat(() => parseMove(tokens, moveNumber++));
+  const moves = repeat(() => parseMove(tokens, {turn: 'white', number: moveNumber++}));
   const gameTermination = tokens.accept('gameTermination');
   if (moves.length === 0 && noValue(gameTermination)) {
     return undefined;

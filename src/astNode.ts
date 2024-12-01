@@ -1,20 +1,13 @@
-export type ASTNodeType =
-  | 'file'
-  | 'game'
-  | 'tagPairSection'
-  | 'moveTextSection'
-  | 'tagPair'
-  | 'fullMove'
-  | 'whiteMove'
-  | 'blackMove'
-  | 'halfMove'
-  | 'gameTermination';
-
-export type ASTNode = FileNode | GameNode | SectionNode | MoveNode | LeafNode;
-
-export type SectionNode = TagPairSectionNode | MoveTextSectionNode;
-
-export type LeafNode = TagPairNode | HalfMoveNode | GameTerminationNode;
+export type ASTNode =
+  | FileNode
+  | GameNode
+  | TagPairSectionNode
+  | TagPairNode
+  | MoveTextSectionNode
+  | MoveNode
+  | HalfMoveNode
+  | VariationNode
+  | GameTerminationNode;
 
 export interface FileNode extends BaseNode {
   type: 'file';
@@ -32,32 +25,32 @@ export interface TagPairSectionNode extends BaseNode {
   tagPairs: TagPairNode[];
 }
 
-export interface MoveTextSectionNode extends BaseNode {
-  type: 'moveTextSection';
-  moves: MoveNode[];
-  gameTermination: GameTerminationNode;
-}
-
 export interface TagPairNode extends BaseNode {
   type: 'tagPair';
   name: string;
   value: string;
 }
 
+export interface MoveTextSectionNode extends BaseNode {
+  type: 'moveTextSection';
+  moves: MoveNode[];
+  gameTermination: GameTerminationNode;
+}
+
 export type MoveNode = FullMoveNode | WhiteMoveNode | BlackMoveNode;
 
-export interface FullMoveNode extends BaseMoveNode {
+interface FullMoveNode extends BaseMoveNode {
   type: 'fullMove';
   white: HalfMoveNode;
   black: HalfMoveNode;
 }
 
-export interface WhiteMoveNode extends BaseMoveNode {
+interface WhiteMoveNode extends BaseMoveNode {
   type: 'whiteMove';
   white: HalfMoveNode;
 }
 
-export interface BlackMoveNode extends BaseMoveNode {
+interface BlackMoveNode extends BaseMoveNode {
   type: 'blackMove';
   black: HalfMoveNode;
 }
@@ -69,6 +62,12 @@ interface BaseMoveNode extends BaseNode {
 export interface HalfMoveNode extends BaseNode {
   type: 'halfMove';
   value: string;
+  variations: VariationNode[];
+}
+
+export interface VariationNode extends BaseNode {
+  type: 'variation';
+  moves: MoveNode[];
 }
 
 export interface GameTerminationNode extends BaseNode {
@@ -77,7 +76,7 @@ export interface GameTerminationNode extends BaseNode {
 }
 
 interface BaseNode {
-  type: ASTNodeType;
+  type: ASTNode['type'];
   start: number;
   end: number;
 }

@@ -33,16 +33,16 @@ describe('parseFile', () => {
               {
                 type: 'fullMove',
                 number: 1,
-                white: {type: 'halfMove', value: 'e4', start: 0, end: 4},
-                black: {type: 'halfMove', value: 'e5', start: 5, end: 7},
+                white: {type: 'halfMove', value: 'e4', variations: [], start: 0, end: 4},
+                black: {type: 'halfMove', value: 'e5', variations: [], start: 5, end: 7},
                 start: 0,
                 end: 7
               },
               {
                 type: 'fullMove',
                 number: 2,
-                white: {type: 'halfMove', value: 'Nf3', start: 8, end: 13},
-                black: {type: 'halfMove', value: 'Nc6', start: 14, end: 17},
+                white: {type: 'halfMove', value: 'Nf3', variations: [], start: 8, end: 13},
+                black: {type: 'halfMove', value: 'Nc6', variations: [], start: 14, end: 17},
                 start: 8,
                 end: 17
               }

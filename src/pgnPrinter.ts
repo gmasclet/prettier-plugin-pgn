@@ -12,7 +12,7 @@ export class PgnPrinter implements Printer<ASTNode> {
     const node = path.node;
     switch (node.type) {
       case 'file':
-        return join(hardline, path.map(print, 'games'));
+        return join([hardline, hardline], path.map(print, 'games'));
 
       case 'game':
         return [
@@ -45,6 +45,15 @@ export class PgnPrinter implements Printer<ASTNode> {
         return group([`${node.number}...`, path.call(print, 'black')]);
 
       case 'halfMove':
+        if (node.variations.length > 0) {
+          return [node.value, ' ', join(' ', path.map(print, 'variations'))];
+        } else {
+          return node.value;
+        }
+
+      case 'variation':
+        return group(['(', ...join(' ', [...path.map(print, 'moves')]), ')']);
+
       case 'gameTermination':
         return node.value;
     }
