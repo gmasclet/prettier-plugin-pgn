@@ -1,7 +1,7 @@
 import {AstPath, doc, Doc, ParserOptions, Printer} from 'prettier';
 import {ASTNode} from './astNode';
 
-const {hardline, group, join} = doc.builders;
+const {fill, hardline, indent, join, line} = doc.builders;
 
 export class PgnPrinter implements Printer<ASTNode> {
   print(
@@ -15,44 +15,49 @@ export class PgnPrinter implements Printer<ASTNode> {
         return join([hardline, hardline], path.map(print, 'games'));
 
       case 'game':
-        return [
-          path.call(print, 'tagPairSection'),
-          hardline,
-          hardline,
-          path.call(print, 'moveTextSection')
-        ];
+        if (node.tagPairSection.tagPairs.length === 0) {
+          return path.call(print, 'moveTextSection');
+        } else {
+          return [
+            path.call(print, 'tagPairSection'),
+            hardline,
+            hardline,
+            path.call(print, 'moveTextSection')
+          ];
+        }
+
       case 'tagPairSection':
         return join(hardline, path.map(print, 'tagPairs'));
 
       case 'tagPair':
-        return group(['[', node.name, ' ', this.quote(node.value), ']']);
+        return `[${node.name} ${this.quote(node.value)}]`;
 
       case 'moveTextSection':
-        return join(' ', [...path.map(print, 'moves'), path.call(print, 'gameTermination')]);
+        return fill(join(line, [...path.map(print, 'moves'), path.call(print, 'gameTermination')]));
 
       case 'fullMove':
-        return group([
+        return fill([
           `${node.number}.`,
           path.call(print, 'white'),
-          ' ',
+          line,
           path.call(print, 'black')
         ]);
 
       case 'whiteMove':
-        return group([`${node.number}.`, path.call(print, 'white')]);
+        return fill([`${node.number}.`, path.call(print, 'white')]);
 
       case 'blackMove':
-        return group([`${node.number}...`, path.call(print, 'black')]);
+        return fill([`${node.number}...`, path.call(print, 'black')]);
 
       case 'halfMove':
         if (node.variations.length > 0) {
-          return [node.value, ' ', join(' ', path.map(print, 'variations'))];
+          return [node.value, indent([hardline, join(hardline, path.map(print, 'variations'))])];
         } else {
           return node.value;
         }
 
       case 'variation':
-        return group(['(', ...join(' ', [...path.map(print, 'moves')]), ')']);
+        return fill(['(', ...join(line, [...path.map(print, 'moves')]), ')']);
 
       case 'gameTermination':
         return node.value;
