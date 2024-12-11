@@ -5,7 +5,6 @@ export type ASTNode =
   | TagPairNode
   | MoveTextSectionNode
   | MoveNode
-  | HalfMoveNode
   | VariationNode
   | GameTerminationNode;
 
@@ -37,30 +36,10 @@ export interface MoveTextSectionNode extends BaseNode {
   gameTermination: GameTerminationNode;
 }
 
-export type MoveNode = FullMoveNode | WhiteMoveNode | BlackMoveNode;
-
-interface FullMoveNode extends BaseMoveNode {
-  type: 'fullMove';
-  white: HalfMoveNode;
-  black: HalfMoveNode;
-}
-
-interface WhiteMoveNode extends BaseMoveNode {
-  type: 'whiteMove';
-  white: HalfMoveNode;
-}
-
-interface BlackMoveNode extends BaseMoveNode {
-  type: 'blackMove';
-  black: HalfMoveNode;
-}
-
-interface BaseMoveNode extends BaseNode {
+export interface MoveNode extends BaseNode {
+  type: 'move';
   number: number;
-}
-
-export interface HalfMoveNode extends BaseNode {
-  type: 'halfMove';
+  turn: 'white' | 'black';
   value: string;
   variations: VariationNode[];
 }

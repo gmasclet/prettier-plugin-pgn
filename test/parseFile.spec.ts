@@ -31,19 +31,39 @@ describe('parseFile', () => {
             type: 'moveTextSection',
             moves: [
               {
-                type: 'fullMove',
+                type: 'move',
                 number: 1,
-                white: {type: 'halfMove', value: 'e4', variations: [], start: 0, end: 4},
-                black: {type: 'halfMove', value: 'e5', variations: [], start: 5, end: 7},
+                turn: 'white',
+                value: 'e4',
+                variations: [],
                 start: 0,
+                end: 4
+              },
+              {
+                type: 'move',
+                number: 1,
+                turn: 'black',
+                value: 'e5',
+                variations: [],
+                start: 5,
                 end: 7
               },
               {
-                type: 'fullMove',
+                type: 'move',
                 number: 2,
-                white: {type: 'halfMove', value: 'Nf3', variations: [], start: 8, end: 13},
-                black: {type: 'halfMove', value: 'Nc6', variations: [], start: 14, end: 17},
+                turn: 'white',
+                value: 'Nf3',
+                variations: [],
                 start: 8,
+                end: 13
+              },
+              {
+                type: 'move',
+                number: 2,
+                turn: 'black',
+                value: 'Nc6',
+                variations: [],
+                start: 14,
                 end: 17
               }
             ],

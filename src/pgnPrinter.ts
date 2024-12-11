@@ -1,5 +1,5 @@
 import {AstPath, doc, Doc, ParserOptions, Printer} from 'prettier';
-import {ASTNode} from './astNode';
+import {ASTNode, MoveNode} from './astNode';
 
 const {fill, hardline, indent, join, line} = doc.builders;
 
@@ -35,26 +35,8 @@ export class PgnPrinter implements Printer<ASTNode> {
       case 'moveTextSection':
         return fill(join(line, [...path.map(print, 'moves'), path.call(print, 'gameTermination')]));
 
-      case 'fullMove':
-        return fill([
-          `${node.number}.`,
-          path.call(print, 'white'),
-          line,
-          path.call(print, 'black')
-        ]);
-
-      case 'whiteMove':
-        return fill([`${node.number}.`, path.call(print, 'white')]);
-
-      case 'blackMove':
-        return fill([`${node.number}...`, path.call(print, 'black')]);
-
-      case 'halfMove':
-        if (node.variations.length > 0) {
-          return [node.value, indent([hardline, join(hardline, path.map(print, 'variations'))])];
-        } else {
-          return node.value;
-        }
+      case 'move':
+        return this.printMove(path, print);
 
       case 'variation':
         return fill(['(', ...join(line, [...path.map(print, 'moves')]), ')']);
@@ -66,5 +48,28 @@ export class PgnPrinter implements Printer<ASTNode> {
 
   private quote(value: string): string {
     return `"${value.replace(/[\\|"]/g, (v) => '\\' + v)}"`;
+  }
+
+  private printMove(path: AstPath<ASTNode>, print: (path: AstPath<ASTNode>) => Doc): Doc {
+    const node = path.node as MoveNode;
+    const value = this.printMoveValue(path);
+    if (node.variations.length > 0) {
+      return [value, indent([hardline, join(hardline, path.map(print, 'variations'))])];
+    } else {
+      return value;
+    }
+  }
+
+  private printMoveValue(path: AstPath<ASTNode>): Doc {
+    const node = path.node as MoveNode;
+    if (node.turn === 'white') {
+      return `${node.number}.${node.value}`;
+    } else if (
+      path.isFirst ||
+      (path.previous?.type === 'move' && path.previous.variations.length > 0)
+    ) {
+      return `${node.number}...${node.value}`;
+    }
+    return node.value;
   }
 }
