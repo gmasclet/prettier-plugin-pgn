@@ -21,6 +21,9 @@ export function parseToken(text: string, index: number): Token | undefined {
         end: index + 1
       };
 
+    case 'comment':
+      return parseComment(text, index);
+
     case 'string':
       return parseString(text, index);
 
@@ -52,6 +55,8 @@ function findTokenType(
       return 'leftParenthesis';
     case ')':
       return 'rightParenthesis';
+    case '{':
+      return 'comment';
     case '"':
       return 'string';
     case '$':
@@ -62,6 +67,26 @@ function findTokenType(
       }
       throw new ParserError(`Unknown token type "${character}"`, {start: index});
   }
+}
+
+function parseComment(text: string, startIndex: number): Token {
+  let index = startIndex + 1;
+  let value = '';
+  while (index < text.length) {
+    const character = text[index];
+    index++;
+    if (character === '}') {
+      break;
+    } else {
+      value += character;
+    }
+  }
+  return {
+    type: 'comment',
+    value: value,
+    start: startIndex,
+    end: index
+  };
 }
 
 function parseString(text: string, startIndex: number): Token {

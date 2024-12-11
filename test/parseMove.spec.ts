@@ -21,6 +21,7 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      comments: [],
       variations: [],
       start: 0,
       end: 4
@@ -34,6 +35,7 @@ describe('parseMove', () => {
       number: 1,
       turn: 'black',
       value: 'e5',
+      comments: [],
       variations: [],
       start: 0,
       end: 6
@@ -47,9 +49,40 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'Nf3',
+      comments: [],
       variations: [],
       start: 0,
       end: 3
+    });
+  });
+
+  it('should parse a move with comments', () => {
+    const result = parseMove(new Tokenizer('1.e4 {A comment} {Another comment}'), {
+      number: 1,
+      turn: 'white'
+    });
+    assert.deepStrictEqual(result, {
+      type: 'move',
+      number: 1,
+      turn: 'white',
+      value: 'e4',
+      comments: [
+        {
+          type: 'comment',
+          value: 'A comment',
+          start: 5,
+          end: 16
+        },
+        {
+          type: 'comment',
+          value: 'Another comment',
+          start: 17,
+          end: 34
+        }
+      ],
+      variations: [],
+      start: 0,
+      end: 34
     });
   });
 
@@ -60,6 +93,7 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'Nf3',
+      comments: [],
       variations: [],
       start: 0,
       end: 5
@@ -73,6 +107,7 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      comments: [],
       variations: [
         {
           type: 'variation',
@@ -82,6 +117,7 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'd4',
+              comments: [],
               variations: [],
               start: 6,
               end: 10
@@ -106,6 +142,7 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      comments: [],
       variations: [
         {
           type: 'variation',
@@ -115,6 +152,7 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'd4',
+              comments: [],
               variations: [],
               start: 6,
               end: 10
@@ -131,6 +169,7 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'c4',
+              comments: [],
               variations: [],
               start: 13,
               end: 17
@@ -155,6 +194,7 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      comments: [],
       variations: [
         {
           type: 'variation',
@@ -164,6 +204,7 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'd4',
+              comments: [],
               variations: [],
               start: 6,
               end: 10
@@ -173,6 +214,7 @@ describe('parseMove', () => {
               number: 1,
               turn: 'black',
               value: 'd5',
+              comments: [],
               variations: [
                 {
                   type: 'variation',
@@ -182,6 +224,7 @@ describe('parseMove', () => {
                       number: 1,
                       turn: 'black',
                       value: 'Nf6',
+                      comments: [],
                       variations: [],
                       start: 15,
                       end: 22

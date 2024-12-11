@@ -56,4 +56,22 @@ describe('Tokenizer', () => {
       {type: 'symbol', value: 'e4', start: 2, end: 4}
     ]);
   });
+
+  it('should skip comments', () => {
+    const tokens = new Tokenizer('{abc def} e4');
+    assert.deepStrictEqual(tokens.accept('symbol'), {
+      type: 'symbol',
+      value: 'e4',
+      start: 10,
+      end: 12
+    });
+    assert.deepStrictEqual(tokens.getComments(), [
+      {
+        type: 'comment',
+        value: 'abc def',
+        start: 0,
+        end: 9
+      }
+    ]);
+  });
 });

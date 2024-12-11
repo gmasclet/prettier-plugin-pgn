@@ -66,6 +66,7 @@ describe('parseGame', () => {
             number: 1,
             turn: 'white',
             value: 'e4',
+            comments: [],
             variations: [],
             start: 0,
             end: 4
@@ -75,6 +76,7 @@ describe('parseGame', () => {
             number: 1,
             turn: 'black',
             value: 'e5',
+            comments: [],
             variations: [],
             start: 5,
             end: 7
@@ -84,6 +86,7 @@ describe('parseGame', () => {
             number: 2,
             turn: 'white',
             value: 'Nf3',
+            comments: [],
             variations: [],
             start: 8,
             end: 13
@@ -93,6 +96,7 @@ describe('parseGame', () => {
             number: 2,
             turn: 'black',
             value: 'Nc6',
+            comments: [],
             variations: [],
             start: 14,
             end: 17
@@ -165,6 +169,7 @@ describe('parseGame', () => {
             number: 1,
             turn: 'white',
             value: 'e4',
+            comments: [],
             variations: [],
             start: 27,
             end: 31
@@ -174,6 +179,7 @@ describe('parseGame', () => {
             number: 1,
             turn: 'black',
             value: 'e5',
+            comments: [],
             variations: [],
             start: 32,
             end: 34
@@ -183,6 +189,7 @@ describe('parseGame', () => {
             number: 2,
             turn: 'white',
             value: 'Nf3',
+            comments: [],
             variations: [],
             start: 35,
             end: 40
@@ -192,6 +199,7 @@ describe('parseGame', () => {
             number: 2,
             turn: 'black',
             value: 'Nc6',
+            comments: [],
             variations: [],
             start: 41,
             end: 44
@@ -237,6 +245,7 @@ describe('parseGame', () => {
             number: 1,
             turn: 'white',
             value: 'e4',
+            comments: [],
             variations: [],
             start: 27,
             end: 31
@@ -246,6 +255,7 @@ describe('parseGame', () => {
             number: 1,
             turn: 'black',
             value: 'e5',
+            comments: [],
             variations: [],
             start: 32,
             end: 34
@@ -255,6 +265,7 @@ describe('parseGame', () => {
             number: 2,
             turn: 'white',
             value: 'Nf3',
+            comments: [],
             variations: [],
             start: 35,
             end: 40
@@ -264,6 +275,7 @@ describe('parseGame', () => {
             number: 2,
             turn: 'black',
             value: 'Nc6',
+            comments: [],
             variations: [],
             start: 41,
             end: 44

@@ -7,7 +7,7 @@ type BaseTokenType =
   | 'leftParenthesis'
   | 'rightParenthesis';
 
-type StringTokenType = 'string' | 'symbol' | 'gameTermination';
+type StringTokenType = 'comment' | 'string' | 'symbol' | 'gameTermination';
 
 type NumberTokenType = 'integer' | 'nag';
 

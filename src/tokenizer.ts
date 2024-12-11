@@ -4,13 +4,14 @@ import {parseToken} from './parseToken';
 import {hasValue, noValue} from './utils';
 
 export class Tokenizer {
+  private comments: Token<'comment'>[] = [];
   private buffer: Token | undefined;
   private index = 0;
 
   constructor(private readonly text: string) {}
 
   accept<T extends TokenType>(tokenType: T): Token<T> | undefined {
-    const token = this.fetch();
+    const token = this.fetch({skipComments: tokenType !== 'comment'}); //
     if (noValue(token)) {
       return undefined;
     }
@@ -22,7 +23,7 @@ export class Tokenizer {
   }
 
   expect<T extends TokenType>(tokenType: T): Token<T> {
-    const token = this.fetch();
+    const token = this.fetch({skipComments: tokenType !== 'comment'});
     if (noValue(token)) {
       const loc = {start: this.text.length};
       throw new ParserError(`Unexpected end of file, was expecting a ${tokenType}`, loc);
@@ -35,18 +36,27 @@ export class Tokenizer {
   }
 
   expectEndOfFile(): void {
-    const token = this.fetch();
+    const token = this.fetch({skipComments: true});
     if (hasValue(token)) {
       throw new ParserError(`Unexpected token ${token.type}`, token);
     }
   }
 
-  private fetch(): Token | undefined {
-    if (noValue(this.buffer)) {
+  getComments(): Token<'comment'>[] {
+    return this.comments;
+  }
+
+  private fetch(options: {skipComments: boolean}): Token | undefined {
+    while (noValue(this.buffer)) {
       const token = parseToken(this.text, this.index);
-      if (hasValue(token)) {
+      if (noValue(token)) {
+        break;
+      }
+      this.index = token.end;
+      if (options.skipComments && token.type === 'comment') {
+        this.comments.push(token);
+      } else {
         this.buffer = token;
-        this.index = token.end;
       }
     }
     return this.buffer;

@@ -8,6 +8,7 @@ export function parseFile(tokens: Tokenizer): FileNode {
   tokens.expectEndOfFile();
   return {
     type: 'file',
+    comments: tokens.getComments(),
     games: games,
     start: games.length === 0 ? 0 : games[0].start,
     end: games.length === 0 ? 0 : games[games.length - 1].end

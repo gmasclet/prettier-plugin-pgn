@@ -133,6 +133,16 @@ describe('parseToken', () => {
     assert.deepStrictEqual(token, {type: 'integer', value: 207, start: 0, end: 3});
   });
 
+  it('should parse a comment', () => {
+    const token = parseToken('{This is a comment}', 0);
+    assert.deepStrictEqual(token, {type: 'comment', value: 'This is a comment', start: 0, end: 19});
+  });
+
+  it('should parse an unterminated comment', () => {
+    const token = parseToken('{This is a comment', 0);
+    assert.deepStrictEqual(token, {type: 'comment', value: 'This is a comment', start: 0, end: 18});
+  });
+
   it('should skip white spaces', () => {
     const token = parseToken('   e4   ', 0);
     assert.deepStrictEqual(token, {type: 'symbol', value: 'e4', start: 3, end: 5});

@@ -15,14 +15,16 @@ export function parseMove(tokens: Tokenizer, context: MoveContext): MoveNode | u
   if (noValue(move)) {
     return undefined;
   }
+  const comments = repeat(() => tokens.accept('comment'));
   const variations = repeat(() => parseVariation(tokens, {...context}));
   const node = {
     type: 'move',
     ...context,
     value: move.value,
+    comments: comments,
     variations: variations,
     start: number ? number.start : [...periods, move][0].start,
-    end: variations.length > 0 ? variations[variations.length - 1].end : move.end
+    end: ([...comments, ...variations].pop() ?? move).end
   } as const;
 
   if (context.turn === 'white') {

@@ -8,6 +8,7 @@ describe('parseFile', () => {
     const result = parseFile(new Tokenizer(''));
     assert.deepStrictEqual(result, {
       type: 'file',
+      comments: [],
       games: [],
       start: 0,
       end: 0
@@ -18,6 +19,7 @@ describe('parseFile', () => {
     const result = parseFile(new Tokenizer('1.e4 e5 2.Nf3 Nc6 *'));
     assert.deepStrictEqual(result, {
       type: 'file',
+      comments: [],
       games: [
         {
           type: 'game',
@@ -35,6 +37,7 @@ describe('parseFile', () => {
                 number: 1,
                 turn: 'white',
                 value: 'e4',
+                comments: [],
                 variations: [],
                 start: 0,
                 end: 4
@@ -44,6 +47,7 @@ describe('parseFile', () => {
                 number: 1,
                 turn: 'black',
                 value: 'e5',
+                comments: [],
                 variations: [],
                 start: 5,
                 end: 7
@@ -53,6 +57,7 @@ describe('parseFile', () => {
                 number: 2,
                 turn: 'white',
                 value: 'Nf3',
+                comments: [],
                 variations: [],
                 start: 8,
                 end: 13
@@ -62,6 +67,7 @@ describe('parseFile', () => {
                 number: 2,
                 turn: 'black',
                 value: 'Nc6',
+                comments: [],
                 variations: [],
                 start: 14,
                 end: 17
@@ -89,6 +95,7 @@ describe('parseFile', () => {
     const result = parseFile(new Tokenizer('* * *'));
     assert.deepStrictEqual(result, {
       type: 'file',
+      comments: [],
       games: [
         {
           type: 'game',
@@ -162,6 +169,69 @@ describe('parseFile', () => {
       ],
       start: 0,
       end: 5
+    });
+  });
+
+  it('should parse a game with a comment', () => {
+    const result = parseFile(new Tokenizer('1.e4 e5 * {The open game}'));
+    assert.deepStrictEqual(result, {
+      type: 'file',
+      comments: [
+        {
+          type: 'comment',
+          value: 'The open game',
+          start: 10,
+          end: 25
+        }
+      ],
+      games: [
+        {
+          type: 'game',
+          tagPairSection: {
+            type: 'tagPairSection',
+            tagPairs: [],
+            start: 0,
+            end: 0
+          },
+          moveTextSection: {
+            type: 'moveTextSection',
+            moves: [
+              {
+                type: 'move',
+                number: 1,
+                turn: 'white',
+                value: 'e4',
+                comments: [],
+                variations: [],
+                start: 0,
+                end: 4
+              },
+              {
+                type: 'move',
+                number: 1,
+                turn: 'black',
+                value: 'e5',
+                comments: [],
+                variations: [],
+                start: 5,
+                end: 7
+              }
+            ],
+            gameTermination: {
+              type: 'gameTermination',
+              value: '*',
+              start: 8,
+              end: 9
+            },
+            start: 0,
+            end: 9
+          },
+          start: 0,
+          end: 9
+        }
+      ],
+      start: 0,
+      end: 9
     });
   });
 
