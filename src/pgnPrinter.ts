@@ -33,13 +33,13 @@ export class PgnPrinter implements Printer<ASTNode> {
         return `[${node.name} ${this.quote(node.value)}]`;
 
       case 'moveTextSection':
-        return fill(join(line, [...path.map(print, 'moves'), path.call(print, 'gameTermination')]));
+        return fill([...path.map(print, 'moves'), path.call(print, 'gameTermination')]);
 
       case 'move':
         return this.printMove(path, print);
 
       case 'variation':
-        return fill(['(', ...join(line, [...path.map(print, 'moves')]), ')']);
+        return fill(['(', ...path.map(print, 'moves'), ')']);
 
       case 'gameTermination':
         return node.value;
@@ -52,12 +52,14 @@ export class PgnPrinter implements Printer<ASTNode> {
 
   private printMove(path: AstPath<ASTNode>, print: (path: AstPath<ASTNode>) => Doc): Doc {
     const node = path.node as MoveNode;
-    const value = this.printMoveValue(path);
+    const parts: Doc[] = [this.printMoveValue(path)];
     if (node.variations.length > 0) {
-      return [value, indent([hardline, join(hardline, path.map(print, 'variations'))])];
-    } else {
-      return value;
+      parts.push(indent([hardline, join(hardline, path.map(print, 'variations'))]));
     }
+    if (this.needMoveSeparator(path)) {
+      parts.push(node.variations.length > 0 ? hardline : line);
+    }
+    return parts.length === 1 ? parts[0] : parts;
   }
 
   private printMoveValue(path: AstPath<ASTNode>): Doc {
@@ -71,5 +73,9 @@ export class PgnPrinter implements Printer<ASTNode> {
       return `${node.number}...${node.value}`;
     }
     return node.value;
+  }
+
+  private needMoveSeparator(path: AstPath<ASTNode>): boolean {
+    return !path.isLast || path.parent?.type === 'moveTextSection';
   }
 }
