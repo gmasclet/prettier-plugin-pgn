@@ -1,21 +1,22 @@
 import * as assert from 'node:assert';
 import {describe, it} from 'node:test';
+import {MoveContext} from '../src/moveContext';
 import {parseMove} from '../src/parseMove';
 import {Tokenizer} from '../src/tokenizer';
 
 describe('parseMove', () => {
   it('should return undefined if there is no token', () => {
-    const result = parseMove(new Tokenizer(''), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer(''), new MoveContext());
     assert.strictEqual(result, undefined);
   });
 
   it('should return undefined if the first token is not a move token', () => {
-    const result = parseMove(new Tokenizer('*'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('*'), new MoveContext());
     assert.strictEqual(result, undefined);
   });
 
   it('should parse a white move', () => {
-    const result = parseMove(new Tokenizer('1.e4'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('1.e4'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -31,7 +32,10 @@ describe('parseMove', () => {
   });
 
   it('should parse a black move', () => {
-    const result = parseMove(new Tokenizer('1...e5'), {number: 1, turn: 'black'});
+    const result = parseMove(
+      new Tokenizer('1...e5'),
+      new MoveContext('rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR b KQkq e3 0 1')
+    );
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -47,7 +51,7 @@ describe('parseMove', () => {
   });
 
   it('should parse a move without a number', () => {
-    const result = parseMove(new Tokenizer('Nf3'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('Nf3'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -63,7 +67,7 @@ describe('parseMove', () => {
   });
 
   it('should parse a move without a period', () => {
-    const result = parseMove(new Tokenizer('1 Nf3'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('1 Nf3'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -79,7 +83,7 @@ describe('parseMove', () => {
   });
 
   it('should parse a move with annotations', () => {
-    const result = parseMove(new Tokenizer('1.Nf3! +/-'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('1.Nf3! +/-'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -107,7 +111,7 @@ describe('parseMove', () => {
   });
 
   it('should ignore redundant suffix annotations', () => {
-    const result = parseMove(new Tokenizer('1.Nf3!!!!'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('1.Nf3!!!!'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -128,10 +132,10 @@ describe('parseMove', () => {
   });
 
   it('should parse a move with comments', () => {
-    const result = parseMove(new Tokenizer('1.e4 {A comment} {Another comment}'), {
-      number: 1,
-      turn: 'white'
-    });
+    const result = parseMove(
+      new Tokenizer('1.e4 {A comment} {Another comment}'),
+      new MoveContext()
+    );
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -160,10 +164,10 @@ describe('parseMove', () => {
   });
 
   it('should parse a move with annotations and comments', () => {
-    const result = parseMove(new Tokenizer('1.e4! {A comment} ~ {Another comment}'), {
-      number: 1,
-      turn: 'white'
-    });
+    const result = parseMove(
+      new Tokenizer('1.e4! {A comment} ~ {Another comment}'),
+      new MoveContext()
+    );
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -204,7 +208,7 @@ describe('parseMove', () => {
   });
 
   it('should parse a move with a variation', () => {
-    const result = parseMove(new Tokenizer('1.e4 (1.d4)'), {number: 1, turn: 'white'});
+    const result = parseMove(new Tokenizer('1.e4 (1.d4)'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -240,10 +244,7 @@ describe('parseMove', () => {
   });
 
   it('should parse a move with several variations', () => {
-    const result = parseMove(new Tokenizer('1.e4 (1.d4) (1.c4)'), {
-      number: 1,
-      turn: 'white'
-    });
+    const result = parseMove(new Tokenizer('1.e4 (1.d4) (1.c4)'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -298,10 +299,7 @@ describe('parseMove', () => {
   });
 
   it('should parse a move with nested variations', () => {
-    const result = parseMove(new Tokenizer('1.e4 (1.d4 d5 (1...Nf6))'), {
-      number: 1,
-      turn: 'white'
-    });
+    const result = parseMove(new Tokenizer('1.e4 (1.d4 d5 (1...Nf6))'), new MoveContext());
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
@@ -370,25 +368,25 @@ describe('parseMove', () => {
 
   it('should throw if an unfinished variation is encountered', () => {
     assert.throws(() => {
-      parseMove(new Tokenizer('1.e4 (1.d4'), {number: 1, turn: 'white'});
+      parseMove(new Tokenizer('1.e4 (1.d4'), new MoveContext());
     });
   });
 
   it('should throw if a non-closed variation is encountered', () => {
     assert.throws(() => {
-      parseMove(new Tokenizer('1.e4 (1.d4 (1.Nf3'), {number: 1, turn: 'white'});
+      parseMove(new Tokenizer('1.e4 (1.d4 (1.Nf3'), new MoveContext());
     });
   });
 
   it('should throw if a number without a move is encountered', () => {
     assert.throws(() => {
-      parseMove(new Tokenizer('42'), {number: 1, turn: 'white'});
+      parseMove(new Tokenizer('42'), new MoveContext());
     });
   });
 
   it('should throw if an unexpected token is encountered', () => {
     assert.throws(() => {
-      parseMove(new Tokenizer('42...*'), {number: 1, turn: 'white'});
+      parseMove(new Tokenizer('42...*'), new MoveContext());
     });
   });
 });

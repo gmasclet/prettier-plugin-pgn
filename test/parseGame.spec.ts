@@ -318,4 +318,63 @@ describe('parseGame', () => {
       end: 46
     });
   });
+
+  it('should parse a game with an alternative starting position', () => {
+    const result = parseGame(
+      new Tokenizer(
+        '[SetUp "1"][FEN "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2"] 2...d6 *'
+      )
+    );
+    assert.deepStrictEqual(result, {
+      type: 'game',
+      tagPairSection: {
+        type: 'tagPairSection',
+        tagPairs: [
+          {
+            type: 'tagPair',
+            name: 'SetUp',
+            value: '1',
+            start: 0,
+            end: 11
+          },
+          {
+            type: 'tagPair',
+            name: 'FEN',
+            value: 'rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R b KQkq - 1 2',
+            start: 11,
+            end: 81
+          }
+        ],
+        start: 0,
+        end: 81
+      },
+      moveTextSection: {
+        type: 'moveTextSection',
+        moves: [
+          {
+            type: 'move',
+            number: 2,
+            turn: 'black',
+            value: 'd6',
+            suffix: undefined,
+            annotations: [],
+            comments: [],
+            variations: [],
+            start: 82,
+            end: 88
+          }
+        ],
+        gameTermination: {
+          type: 'gameTermination',
+          value: '*',
+          start: 89,
+          end: 90
+        },
+        start: 82,
+        end: 90
+      },
+      start: 0,
+      end: 90
+    });
+  });
 });

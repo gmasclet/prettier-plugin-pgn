@@ -1,4 +1,5 @@
 import {GameNode, MoveTextSectionNode, TagPairSectionNode} from './astNode';
+import {MoveContext} from './moveContext';
 import {parseMove} from './parseMove';
 import {parseTagPair} from './parseTagPair';
 import {Tokenizer} from './tokenizer';
@@ -6,7 +7,7 @@ import {noValue, repeat} from './utils';
 
 export function parseGame(tokens: Tokenizer): GameNode | undefined {
   const tagPairSection = parseTagPairSection(tokens);
-  const moveTextSection = parseMoveTextSection(tokens);
+  const moveTextSection = parseMoveTextSection(tokens, createContext(tagPairSection));
   if (noValue(tagPairSection) && noValue(moveTextSection)) {
     return undefined;
   }
@@ -48,8 +49,10 @@ function parseTagPairSection(tokens: Tokenizer): TagPairSectionNode | undefined 
   };
 }
 
-function parseMoveTextSection(tokens: Tokenizer): MoveTextSectionNode | undefined {
-  const context = {number: 1, turn: 'white'} as const;
+function parseMoveTextSection(
+  tokens: Tokenizer,
+  context: MoveContext
+): MoveTextSectionNode | undefined {
   const moves = repeat(() => parseMove(tokens, context));
   const gameTermination = tokens.accept('gameTermination');
   if (moves.length === 0 && noValue(gameTermination)) {
@@ -67,4 +70,9 @@ function parseMoveTextSection(tokens: Tokenizer): MoveTextSectionNode | undefine
     start: (moves[0] ?? gameTermination).start,
     end: (gameTermination ?? moves[moves.length - 1]).end
   };
+}
+
+function createContext(tagPairSection: TagPairSectionNode | undefined): MoveContext {
+  const fen = tagPairSection?.tagPairs.find((tagPair) => tagPair.name === 'FEN')?.value;
+  return new MoveContext(fen);
 }

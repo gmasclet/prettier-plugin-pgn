@@ -1,11 +1,7 @@
 import {AnnotationNode, CommentNode, MoveNode, VariationNode} from './astNode';
+import {MoveContext} from './moveContext';
 import {Tokenizer} from './tokenizer';
 import {hasValue, noValue, repeat} from './utils';
-
-export interface MoveContext {
-  number: number;
-  turn: 'white' | 'black';
-}
 
 export function parseMove(tokens: Tokenizer, context: MoveContext): MoveNode | undefined {
   const number = tokens.accept('integer');
@@ -32,11 +28,12 @@ export function parseMove(tokens: Tokenizer, context: MoveContext): MoveNode | u
     break;
   }
 
-  const variations = repeat(() => parseVariation(tokens, {...context}));
+  const variations = repeat(() => parseVariation(tokens, context.clone()));
   const node = {
     type: 'move',
-    ...context,
-    value: move.value,
+    number: context.number,
+    turn: context.turn,
+    value: context.play(move),
     suffix: annotations.find((annotation) => isSuffix(annotation)),
     annotations: annotations.filter((annotation) => !isSuffix(annotation)),
     comments: comments,
@@ -46,13 +43,6 @@ export function parseMove(tokens: Tokenizer, context: MoveContext): MoveNode | u
       [...[...annotations, ...comments].sort((a, b) => a.end - b.end), ...variations].pop() ?? move
     ).end
   } as const;
-
-  if (context.turn === 'white') {
-    context.turn = 'black';
-  } else {
-    context.number++;
-    context.turn = 'white';
-  }
 
   return node;
 }

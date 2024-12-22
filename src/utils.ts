@@ -17,3 +17,10 @@ export function repeat<T>(parse: () => T | undefined): T[] {
     }
   }
 }
+
+export function castToError(throwable: unknown): Error {
+  if (throwable instanceof Error) {
+    return throwable;
+  }
+  return new Error(`Unknown error: ${String(throwable)}`);
+}
