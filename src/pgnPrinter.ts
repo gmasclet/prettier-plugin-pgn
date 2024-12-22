@@ -14,9 +14,6 @@ export class PgnPrinter implements Printer<ASTNode> {
       case 'file':
         return join([hardline, hardline], path.map(print, 'games'));
 
-      case 'comment':
-        return this.printMoveTextComment(path);
-
       case 'game':
         if (node.tagPairSection.tagPairs.length === 0) {
           return path.call(print, 'moveTextSection');
@@ -48,6 +45,12 @@ export class PgnPrinter implements Printer<ASTNode> {
 
       case 'move':
         return this.printMove(path, print);
+
+      case 'annotation':
+        return node.value;
+
+      case 'comment':
+        return this.printMoveTextComment(path);
 
       case 'variation':
         return fill(['(', ...this.printMoves(path, print), ')']);
@@ -84,6 +87,11 @@ export class PgnPrinter implements Printer<ASTNode> {
   private printMove(path: AstPath<ASTNode>, print: (path: AstPath<ASTNode>) => Doc): Doc[] {
     const node = path.node as MoveNode;
     const parts: Doc[] = [this.printMoveValue(path)];
+    if (node.annotations.length > 0) {
+      parts.push(
+        ...[line, ...join(line, path.map(print, 'annotations')).flatMap((value) => value)]
+      );
+    }
     if (node.comments.length > 0) {
       parts.push(...[line, ...join(line, path.map(print, 'comments')).flatMap((value) => value)]);
     }
@@ -95,16 +103,17 @@ export class PgnPrinter implements Printer<ASTNode> {
 
   private printMoveValue(path: AstPath<ASTNode>): Doc {
     const node = path.node as MoveNode;
+    const value = node.value + (node.suffix?.value ?? '');
     if (node.turn === 'white') {
-      return `${node.number}.${node.value}`;
+      return `${node.number}.${value}`;
     } else if (
       path.isFirst ||
       (path.previous?.type === 'move' &&
         (path.previous.comments.length > 0 || path.previous.variations.length > 0))
     ) {
-      return `${node.number}...${node.value}`;
+      return `${node.number}...${value}`;
     }
-    return node.value;
+    return value;
   }
 
   canAttachComment(node: ASTNode): boolean {

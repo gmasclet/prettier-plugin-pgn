@@ -11,7 +11,7 @@ export class Tokenizer {
   constructor(private readonly text: string) {}
 
   accept<T extends TokenType>(tokenType: T): Token<T> | undefined {
-    const token = this.fetch({skipComments: tokenType !== 'comment'}); //
+    const token = this.fetch({skipComments: tokenType !== 'comment'});
     if (noValue(token)) {
       return undefined;
     }

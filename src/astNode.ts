@@ -1,11 +1,12 @@
 export type ASTNode =
   | FileNode
-  | CommentNode
   | GameNode
   | TagPairSectionNode
   | TagPairNode
   | MoveTextSectionNode
   | MoveNode
+  | AnnotationNode
+  | CommentNode
   | VariationNode
   | GameTerminationNode;
 
@@ -13,11 +14,6 @@ export interface FileNode extends BaseNode {
   type: 'file';
   comments: CommentNode[];
   games: GameNode[];
-}
-
-export interface CommentNode extends BaseNode {
-  type: 'comment';
-  value: string;
 }
 
 export interface GameNode extends BaseNode {
@@ -48,8 +44,20 @@ export interface MoveNode extends BaseNode {
   number: number;
   turn: 'white' | 'black';
   value: string;
+  suffix: AnnotationNode | undefined;
+  annotations: AnnotationNode[];
   comments: CommentNode[];
   variations: VariationNode[];
+}
+
+export interface AnnotationNode extends BaseNode {
+  type: 'annotation';
+  value: string;
+}
+
+export interface CommentNode extends BaseNode {
+  type: 'comment';
+  value: string;
 }
 
 export interface VariationNode extends BaseNode {

@@ -143,6 +143,14 @@ describe('Index', () => {
     `);
   });
 
+  it('Should format a game with annotations and comments', async () => {
+    await expectFormat(`
+      [Event "F/S Return Match"]
+      
+      1.e4 e5 2.Nf3 Nc6! ~ 3.Bb5!? = {The Ruy Lopez} 3...a6!! $10 *
+    `);
+  });
+
   async function expectFormat(text: string) {
     const expected = trimIndent(text);
     const result = await prettier.format(expected, {

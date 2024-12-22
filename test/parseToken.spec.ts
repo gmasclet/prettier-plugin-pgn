@@ -63,9 +63,89 @@ describe('parseToken', () => {
     assert.deepStrictEqual(token, {type: 'string', value: 'hello ', start: 0, end: 8});
   });
 
-  it('should parse a NAG', () => {
+  it('should parse a numeric annotation glyph', () => {
     const token = parseToken('$1', 0);
-    assert.deepStrictEqual(token, {type: 'nag', value: 1, start: 0, end: 2});
+    assert.deepStrictEqual(token, {type: 'annotation', value: '$1', start: 0, end: 2});
+  });
+
+  it(`should parse the "!" annotation`, () => {
+    const token = parseToken('!', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '!', start: 0, end: 1});
+  });
+
+  it(`should parse the "!!" annotation`, () => {
+    const token = parseToken('!!', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '!!', start: 0, end: 2});
+  });
+
+  it(`should parse the "?" annotation`, () => {
+    const token = parseToken('?', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '?', start: 0, end: 1});
+  });
+
+  it(`should parse the "??" annotation`, () => {
+    const token = parseToken('??', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '??', start: 0, end: 2});
+  });
+
+  it(`should parse the "!?" annotation`, () => {
+    const token = parseToken('!?', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '!?', start: 0, end: 2});
+  });
+
+  it(`should parse the "?!" annotation`, () => {
+    const token = parseToken('?!', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '?!', start: 0, end: 2});
+  });
+
+  it(`should parse the "+--" annotation`, () => {
+    const token = parseToken('+--', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '+--', start: 0, end: 3});
+  });
+
+  it(`should parse the "+-" annotation`, () => {
+    const token = parseToken('+-', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '+-', start: 0, end: 2});
+  });
+
+  it(`should parse the "+/-" annotation`, () => {
+    const token = parseToken('+/-', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '+/-', start: 0, end: 3});
+  });
+
+  it(`should parse the "+=" annotation`, () => {
+    const token = parseToken('+=', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '+=', start: 0, end: 2});
+  });
+
+  it(`should parse the "--+" annotation`, () => {
+    const token = parseToken('--+', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '--+', start: 0, end: 3});
+  });
+
+  it(`should parse the "-+" annotation`, () => {
+    const token = parseToken('-+', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '-+', start: 0, end: 2});
+  });
+
+  it(`should parse the "-/+" annotation`, () => {
+    const token = parseToken('-/+', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '-/+', start: 0, end: 3});
+  });
+
+  it(`should parse the "=+" annotation`, () => {
+    const token = parseToken('=+', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '=+', start: 0, end: 2});
+  });
+
+  it(`should parse the "=" annotation`, () => {
+    const token = parseToken('=', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '=', start: 0, end: 1});
+  });
+
+  it(`should parse the "~" annotation`, () => {
+    const token = parseToken('~', 0);
+    assert.deepStrictEqual(token, {type: 'annotation', value: '~', start: 0, end: 1});
   });
 
   it('should parse a simple move symbol', () => {

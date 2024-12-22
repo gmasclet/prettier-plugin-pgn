@@ -27,8 +27,8 @@ export function parseToken(text: string, index: number): Token | undefined {
     case 'string':
       return parseString(text, index);
 
-    case 'nag':
-      return parseNag(text, index);
+    case 'annotation':
+      return parseAnnotation(text, index);
 
     case 'symbol':
       return parseSymbol(text, index);
@@ -59,9 +59,10 @@ function findTokenType(
       return 'comment';
     case '"':
       return 'string';
-    case '$':
-      return 'nag';
     default:
+      if (/[$!?=~+-]/.test(character)) {
+        return 'annotation';
+      }
       if (/[*0-9a-zA-Z]/.test(character)) {
         return 'symbol';
       }
@@ -118,19 +119,50 @@ function parseString(text: string, startIndex: number): Token {
   };
 }
 
-function parseNag(text: string, startIndex: number): Token {
-  let index = startIndex + 1;
-  while (index < text.length && /[0-9]/.test(text[index])) {
-    index++;
-  }
-
-  const value = text.substring(startIndex, index);
+function parseAnnotation(text: string, startIndex: number): Token {
+  const value = parseAnnotationValue(text, startIndex);
   return {
-    type: 'nag',
-    value: Number.parseInt(text.substring(startIndex + 1, index)),
+    type: 'annotation',
+    value: value,
     start: startIndex,
     end: startIndex + value.length
   };
+}
+
+function parseAnnotationValue(text: string, startIndex: number): string {
+  if (text[startIndex] === '$') {
+    let index = startIndex + 1;
+    while (index < text.length && /[0-9]/.test(text[index])) {
+      index++;
+    }
+    return text.substring(startIndex, index);
+  }
+
+  const annotations = [
+    '!',
+    '?',
+    '!!',
+    '??',
+    '!?',
+    '?!',
+    '+--',
+    '--+',
+    '+-',
+    '-+',
+    '+/-',
+    '-/+',
+    '+=',
+    '=+',
+    '=',
+    '~'
+  ].sort((a, b) => b.length - a.length);
+
+  for (const value of annotations) {
+    if (text.startsWith(value, startIndex)) {
+      return value;
+    }
+  }
+  throw new ParserError('Unknown annotation', {start: startIndex});
 }
 
 function parseSymbol(text: string, startIndex: number): Token {

@@ -1,4 +1,4 @@
-import {MoveNode, VariationNode} from './astNode';
+import {AnnotationNode, CommentNode, MoveNode, VariationNode} from './astNode';
 import {Tokenizer} from './tokenizer';
 import {hasValue, noValue, repeat} from './utils';
 
@@ -15,16 +15,36 @@ export function parseMove(tokens: Tokenizer, context: MoveContext): MoveNode | u
   if (noValue(move)) {
     return undefined;
   }
-  const comments = repeat(() => tokens.accept('comment'));
+
+  const comments: CommentNode[] = [];
+  const annotations: AnnotationNode[] = [];
+  for (;;) {
+    const comment = tokens.accept('comment');
+    if (hasValue(comment)) {
+      comments.push(comment);
+      continue;
+    }
+    const annotation = tokens.accept('annotation');
+    if (hasValue(annotation)) {
+      annotations.push(annotation);
+      continue;
+    }
+    break;
+  }
+
   const variations = repeat(() => parseVariation(tokens, {...context}));
   const node = {
     type: 'move',
     ...context,
     value: move.value,
+    suffix: annotations.find((annotation) => isSuffix(annotation)),
+    annotations: annotations.filter((annotation) => !isSuffix(annotation)),
     comments: comments,
     variations: variations,
     start: number ? number.start : [...periods, move][0].start,
-    end: ([...comments, ...variations].pop() ?? move).end
+    end: (
+      [...[...annotations, ...comments].sort((a, b) => a.end - b.end), ...variations].pop() ?? move
+    ).end
   } as const;
 
   if (context.turn === 'white') {
@@ -35,6 +55,10 @@ export function parseMove(tokens: Tokenizer, context: MoveContext): MoveNode | u
   }
 
   return node;
+}
+
+function isSuffix(annotation: AnnotationNode): boolean {
+  return ['!', '?', '!!', '??', '!?', '?!'].includes(annotation.value);
 }
 
 function parseVariation(tokens: Tokenizer, context: MoveContext): VariationNode | undefined {

@@ -7,24 +7,20 @@ type BaseTokenType =
   | 'leftParenthesis'
   | 'rightParenthesis';
 
-type StringTokenType = 'comment' | 'string' | 'symbol' | 'gameTermination';
+type StringTokenType = 'annotation' | 'comment' | 'string' | 'symbol' | 'gameTermination';
 
-type NumberTokenType = 'integer' | 'nag';
+type NumberTokenType = 'integer';
 
 export type Token<T extends TokenType = TokenType> = T extends BaseTokenType
   ? BaseToken<T>
   : T extends StringTokenType
-    ? StringToken<T>
+    ? ValueToken<T, string>
     : T extends NumberTokenType
-      ? NumberToken<T>
+      ? ValueToken<T, number>
       : never;
 
-interface StringToken<T> extends BaseToken<T> {
-  value: string;
-}
-
-interface NumberToken<T> extends BaseToken<T> {
-  value: number;
+interface ValueToken<T, V> extends BaseToken<T> {
+  value: V;
 }
 
 interface BaseToken<T> {

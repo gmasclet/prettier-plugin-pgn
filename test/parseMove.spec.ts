@@ -21,6 +21,8 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      suffix: undefined,
+      annotations: [],
       comments: [],
       variations: [],
       start: 0,
@@ -35,6 +37,8 @@ describe('parseMove', () => {
       number: 1,
       turn: 'black',
       value: 'e5',
+      suffix: undefined,
+      annotations: [],
       comments: [],
       variations: [],
       start: 0,
@@ -49,10 +53,77 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'Nf3',
+      suffix: undefined,
+      annotations: [],
       comments: [],
       variations: [],
       start: 0,
       end: 3
+    });
+  });
+
+  it('should parse a move without a period', () => {
+    const result = parseMove(new Tokenizer('1 Nf3'), {number: 1, turn: 'white'});
+    assert.deepStrictEqual(result, {
+      type: 'move',
+      number: 1,
+      turn: 'white',
+      value: 'Nf3',
+      suffix: undefined,
+      annotations: [],
+      comments: [],
+      variations: [],
+      start: 0,
+      end: 5
+    });
+  });
+
+  it('should parse a move with annotations', () => {
+    const result = parseMove(new Tokenizer('1.Nf3! +/-'), {number: 1, turn: 'white'});
+    assert.deepStrictEqual(result, {
+      type: 'move',
+      number: 1,
+      turn: 'white',
+      value: 'Nf3',
+      suffix: {
+        type: 'annotation',
+        value: '!',
+        start: 5,
+        end: 6
+      },
+      annotations: [
+        {
+          type: 'annotation',
+          value: '+/-',
+          start: 7,
+          end: 10
+        }
+      ],
+      comments: [],
+      variations: [],
+      start: 0,
+      end: 10
+    });
+  });
+
+  it('should ignore redundant suffix annotations', () => {
+    const result = parseMove(new Tokenizer('1.Nf3!!!!'), {number: 1, turn: 'white'});
+    assert.deepStrictEqual(result, {
+      type: 'move',
+      number: 1,
+      turn: 'white',
+      value: 'Nf3',
+      suffix: {
+        type: 'annotation',
+        value: '!!',
+        start: 5,
+        end: 7
+      },
+      annotations: [],
+      comments: [],
+      variations: [],
+      start: 0,
+      end: 9
     });
   });
 
@@ -66,6 +137,8 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      suffix: undefined,
+      annotations: [],
       comments: [
         {
           type: 'comment',
@@ -86,17 +159,47 @@ describe('parseMove', () => {
     });
   });
 
-  it('should parse a move without a period', () => {
-    const result = parseMove(new Tokenizer('1 Nf3'), {number: 1, turn: 'white'});
+  it('should parse a move with annotations and comments', () => {
+    const result = parseMove(new Tokenizer('1.e4! {A comment} ~ {Another comment}'), {
+      number: 1,
+      turn: 'white'
+    });
     assert.deepStrictEqual(result, {
       type: 'move',
       number: 1,
       turn: 'white',
-      value: 'Nf3',
-      comments: [],
+      value: 'e4',
+      suffix: {
+        type: 'annotation',
+        value: '!',
+        start: 4,
+        end: 5
+      },
+      annotations: [
+        {
+          type: 'annotation',
+          value: '~',
+          start: 18,
+          end: 19
+        }
+      ],
+      comments: [
+        {
+          type: 'comment',
+          value: 'A comment',
+          start: 6,
+          end: 17
+        },
+        {
+          type: 'comment',
+          value: 'Another comment',
+          start: 20,
+          end: 37
+        }
+      ],
       variations: [],
       start: 0,
-      end: 5
+      end: 37
     });
   });
 
@@ -107,6 +210,8 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      suffix: undefined,
+      annotations: [],
       comments: [],
       variations: [
         {
@@ -117,6 +222,8 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'd4',
+              suffix: undefined,
+              annotations: [],
               comments: [],
               variations: [],
               start: 6,
@@ -142,6 +249,8 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      suffix: undefined,
+      annotations: [],
       comments: [],
       variations: [
         {
@@ -152,6 +261,8 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'd4',
+              suffix: undefined,
+              annotations: [],
               comments: [],
               variations: [],
               start: 6,
@@ -169,6 +280,8 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'c4',
+              suffix: undefined,
+              annotations: [],
               comments: [],
               variations: [],
               start: 13,
@@ -194,6 +307,8 @@ describe('parseMove', () => {
       number: 1,
       turn: 'white',
       value: 'e4',
+      suffix: undefined,
+      annotations: [],
       comments: [],
       variations: [
         {
@@ -204,6 +319,8 @@ describe('parseMove', () => {
               number: 1,
               turn: 'white',
               value: 'd4',
+              suffix: undefined,
+              annotations: [],
               comments: [],
               variations: [],
               start: 6,
@@ -214,6 +331,8 @@ describe('parseMove', () => {
               number: 1,
               turn: 'black',
               value: 'd5',
+              suffix: undefined,
+              annotations: [],
               comments: [],
               variations: [
                 {
@@ -224,6 +343,8 @@ describe('parseMove', () => {
                       number: 1,
                       turn: 'black',
                       value: 'Nf6',
+                      suffix: undefined,
+                      annotations: [],
                       comments: [],
                       variations: [],
                       start: 15,
