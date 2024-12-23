@@ -154,7 +154,7 @@ describe('Index', () => {
   async function expectFormat(text: string) {
     const expected = trimIndent(text);
     const result = await prettier.format(expected, {
-      parser: 'pgn-parse',
+      parser: 'pgn',
       plugins: ['./dist/index.js']
     });
 

@@ -6,7 +6,7 @@ import {Tokenizer} from './tokenizer';
 
 export class PgnParser implements Parser<ASTNode> {
   get astFormat(): string {
-    return 'pgn-ast';
+    return 'pgn';
   }
 
   parse(text: string): ASTNode {

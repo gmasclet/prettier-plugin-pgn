@@ -1,21 +1,20 @@
 import {PgnParser} from './pgnParser';
 import {PgnPrinter} from './pgnPrinter';
-import {Options} from './options';
-
-export const options: Options = {};
 
 export const languages = [
   {
     name: 'Portable Game Notation',
-    parsers: ['pgn-parse'],
+    parsers: ['pgn'],
     extensions: ['.pgn']
   }
 ];
 
 export const parsers = {
-  'pgn-parse': new PgnParser()
+  pgn: new PgnParser()
 };
 
 export const printers = {
-  'pgn-ast': new PgnPrinter()
+  pgn: new PgnPrinter()
 };
+
+export const options = {};
