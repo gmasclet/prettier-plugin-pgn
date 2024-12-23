@@ -238,4 +238,10 @@ describe('parseToken', () => {
       parseToken('@', 0);
     });
   });
+
+  it('should throw if an invalid annotation is encountered', () => {
+    assert.throws(() => {
+      parseToken('+++', 0);
+    });
+  });
 });
