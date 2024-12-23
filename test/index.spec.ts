@@ -170,6 +170,7 @@ describe('Index', () => {
     return lines
       .slice(1, lines.length - 1)
       .map((line) => line.substring(indent))
-      .join('\n');
+      .join('\n')
+      .concat('\n');
   }
 });

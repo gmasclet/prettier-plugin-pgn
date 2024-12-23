@@ -12,7 +12,7 @@ export class PgnPrinter implements Printer<ASTNode> {
     const node = path.node;
     switch (node.type) {
       case 'file':
-        return join([hardline, hardline], path.map(print, 'games'));
+        return [join([hardline, hardline], path.map(print, 'games')), hardline];
 
       case 'game':
         if (node.tagPairSection.tagPairs.length === 0) {
@@ -58,11 +58,6 @@ export class PgnPrinter implements Printer<ASTNode> {
       case 'gameTermination':
         return node.value;
     }
-  }
-
-  private printMoveTextComment(path: AstPath<ASTNode>): Doc[] {
-    const node = path.node as CommentNode;
-    return ['{', ...join(line, node.value.trim().split(/\s/)), '}'];
   }
 
   private quote(value: string): string {
@@ -126,5 +121,20 @@ export class PgnPrinter implements Printer<ASTNode> {
 
   printComment(path: AstPath<ASTNode>): Doc {
     return fill(this.printMoveTextComment(path));
+  }
+
+  private printMoveTextComment(path: AstPath<ASTNode>): Doc[] {
+    const node = path.node as CommentNode;
+    return [
+      '{',
+      ...join(
+        line,
+        node.value
+          .trim()
+          .split(/\s/)
+          .filter((part) => part.length > 0)
+      ),
+      '}'
+    ];
   }
 }
