@@ -1,3 +1,9 @@
+/**
+ * Thrown internally when the parsing fails, typically due to a syntax error.
+ *
+ * Provide an adapter method, to convert itself into the type of errors expected by Prettier,
+ * so that the location of the error can be reported.
+ */
 export class ParserError extends Error {
   constructor(
     message: string,

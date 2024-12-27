@@ -3,6 +3,9 @@ import {ASTNode, CommentNode, MoveNode} from './astNode';
 
 const {fill, hardline, indent, join, line} = doc.builders;
 
+/**
+ * Implement the Prettier `Printer` interface, for the PGN format.
+ */
 export class PgnPrinter implements Printer<ASTNode> {
   print(
     path: AstPath<ASTNode>,

@@ -1,6 +1,9 @@
 import {ParserError} from './parserError';
 import {Token, TokenType} from './token';
 
+/**
+ * Parses a token from the given text starting at the specified index.
+ */
 export function parseToken(text: string, index: number): Token | undefined {
   while (index < text.length && isWhitespace(text[index])) {
     index++;
