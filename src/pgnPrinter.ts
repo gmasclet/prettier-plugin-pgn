@@ -53,7 +53,7 @@ export class PgnPrinter implements Printer<ASTNode> {
         return node.value;
 
       case 'comment':
-        return this.printMoveTextComment(path);
+        return this.printCommentNode(path.node as CommentNode);
 
       case 'variation':
         return fill(['(', ...this.printMoves(path, print), ')']);
@@ -72,14 +72,16 @@ export class PgnPrinter implements Printer<ASTNode> {
     path.each((move) => {
       result.push(...this.printMove(move, print));
       if (!move.isLast) {
-        result.push(this.getMoveSeparator(move.node));
+        result.push(this.getMoveSeparator(move.node, path.node.type === 'variation'));
       }
     }, 'moves');
     return result;
   }
 
-  private getMoveSeparator(move: MoveNode) {
-    return move.variations.length > 0 ? hardline : line;
+  private getMoveSeparator(move: MoveNode, isVariation = false) {
+    return (!isVariation && move.comments.length > 0) || move.variations.length > 0
+      ? hardline
+      : line;
   }
 
   private printMove(path: AstPath<ASTNode>, print: (path: AstPath<ASTNode>) => Doc): Doc[] {
@@ -91,7 +93,27 @@ export class PgnPrinter implements Printer<ASTNode> {
       );
     }
     if (node.comments.length > 0) {
-      parts.push(...[line, ...join(line, path.map(print, 'comments')).flatMap((value) => value)]);
+      if (path.parent?.type === 'moveTextSection') {
+        parts.push(
+          indent([
+            hardline,
+            join(
+              hardline,
+              node.comments.map((comment) => fill(this.printCommentNode(comment)))
+            )
+          ])
+        );
+      } else {
+        parts.push(
+          ...[
+            line,
+            ...join(
+              line,
+              node.comments.map((comment) => this.printCommentNode(comment))
+            ).flatMap((value) => value)
+          ]
+        );
+      }
     }
     if (node.variations.length > 0) {
       parts.push(indent([hardline, join(hardline, path.map(print, 'variations'))]));
@@ -114,20 +136,7 @@ export class PgnPrinter implements Printer<ASTNode> {
     return value;
   }
 
-  canAttachComment(node: ASTNode): boolean {
-    return node.type !== 'comment';
-  }
-
-  willPrintOwnComments(path: AstPath<ASTNode>): boolean {
-    return path.node.type === 'move';
-  }
-
-  printComment(path: AstPath<ASTNode>): Doc {
-    return fill(this.printMoveTextComment(path));
-  }
-
-  private printMoveTextComment(path: AstPath<ASTNode>): Doc[] {
-    const node = path.node as CommentNode;
+  private printCommentNode(node: CommentNode): Doc[] {
     return [
       '{',
       ...join(
@@ -139,5 +148,17 @@ export class PgnPrinter implements Printer<ASTNode> {
       ),
       '}'
     ];
+  }
+
+  canAttachComment(node: ASTNode): boolean {
+    return node.type !== 'comment';
+  }
+
+  willPrintOwnComments(path: AstPath<ASTNode>): boolean {
+    return path.node.type === 'move';
+  }
+
+  printComment(path: AstPath<ASTNode>): Doc {
+    return fill(this.printCommentNode(path.node as CommentNode));
   }
 }

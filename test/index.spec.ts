@@ -10,7 +10,7 @@ describe('Index', () => {
   it('Should format a simple game', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
+
       1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 *
     `);
   });
@@ -39,7 +39,7 @@ describe('Index', () => {
     await expectFormat(`
       [Event "F/S Return Match"]
       [Site "Belgrade, Serbia JUG"]
-      
+
       1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 *
 
       [White "Adolf Anderssen"]
@@ -52,7 +52,7 @@ describe('Index', () => {
   it('Should format games without tag pairs', async () => {
     await expectFormat(`
       1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 *
-      
+
       1.d4 d5 2.c4 e6 3.Nc3 Nf6 *
 
       1.e4 e6 2.d4 d5 3.Nc3 Nf6 *
@@ -62,7 +62,7 @@ describe('Index', () => {
   it('Should format a game with a variation', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
+
       1.e4 e5
         (1...e6 2.d4)
       2.Nf3 Nc6 3.Bb5 a6 *
@@ -72,7 +72,7 @@ describe('Index', () => {
   it('Should format a game with several variations', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
+
       1.e4 e5
         (1...e6 2.d4)
         (1...c5 2.Nf3)
@@ -83,7 +83,7 @@ describe('Index', () => {
   it('Should format a game with nested variations', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
+
       1.e4 e5
         (1...e6 2.d4
           (2.d3))
@@ -91,29 +91,64 @@ describe('Index', () => {
     `);
   });
 
+  it('Should format a game with an empty comment in the movetext', async () => {
+    await expectFormat(`
+      [Event "F/S Return Match"]
+
+      1.e4 e5 2.Nf3 Nc6 3.Bb5
+        {}
+      3...a6 *
+    `);
+  });
+
   it('Should format a game with a short comment in the movetext', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
-      1.e4 e5 2.Nf3 Nc6 3.Bb5 {The Ruy Lopez} 3...a6 *
+
+      1.e4 e5 2.Nf3 Nc6 3.Bb5
+        {The Ruy Lopez}
+      3...a6 *
     `);
   });
 
   it('Should format a game with a long comment spanning over several lines in the movetext', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
-      1.e4 e5 2.Nf3 Nc6 3.Bb5 {The essential move marking the Spanish Game, or Ruy Lopez.
-      It is the double king's pawn opening most commonly used in master play; it has been
-      adopted by almost all players at some point in their careers and many play it from
-      both the White and Black sides.} 3...a6 *
+
+      1.e4 e5 2.Nf3 Nc6 3.Bb5
+        {The essential move marking the Spanish Game, or Ruy Lopez. It is the double king's
+        pawn opening most commonly used in master play; it has been adopted by almost all
+        players at some point in their careers and many play it from both the White and
+        Black sides.}
+      3...a6 *
+    `);
+  });
+
+  it('Should format a game with a short comment in a variation', async () => {
+    await expectFormat(`
+      [Event "F/S Return Match"]
+
+      1.e4 e5
+        (1...e6 2.d4 d5 {The French Defense})
+      2.Nf3 Nc6 3.Bb5 a6 *
+    `);
+  });
+
+  it('Should format a game with a long comment in a variation', async () => {
+    await expectFormat(`
+      [Event "F/S Return Match"]
+
+      1.e4 e5
+        (1...e6 {The main line of the French Defence continues 2.d4 d5. White sets up
+        a pawn centre, which Black immediately challenges by attacking the pawn on e4.})
+      2.Nf3 Nc6 3.Bb5 a6 *
     `);
   });
 
   it('Should format a game with a comment before the movetext', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
+
       {The 1992 Fischer–Spassky match was a chess match between former world chess champions
       Bobby Fischer and Boris Spassky. It was billed as a World Chess Championship, though
       it was an unofficial rematch of their 1972 World Championship match.}
@@ -127,7 +162,7 @@ describe('Index', () => {
       Bobby Fischer and Boris Spassky. It was billed as a World Chess Championship, though
       it was an unofficial rematch of their 1972 World Championship match.}
       [Event "F/S Return Match"]
-      
+
       1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 *
     `);
   });
@@ -135,7 +170,7 @@ describe('Index', () => {
   it('Should format a game with a footer comment', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
+
       1.e4 e5 2.Nf3 Nc6 3.Bb5 a6 *
       {The 1992 Fischer–Spassky match was a chess match between former world chess champions
       Bobby Fischer and Boris Spassky. It was billed as a World Chess Championship, though
@@ -146,8 +181,10 @@ describe('Index', () => {
   it('Should format a game with annotations and comments', async () => {
     await expectFormat(`
       [Event "F/S Return Match"]
-      
-      1.e4 e5 2.Nf3 Nc6! ~ 3.Bb5!? = {The Ruy Lopez} 3...a6!! $10 *
+
+      1.e4 e5 2.Nf3 Nc6! ~ 3.Bb5!? =
+        {The Ruy Lopez}
+      3...a6!! $10 *
     `);
   });
 
