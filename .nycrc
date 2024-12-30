@@ -1,0 +1,7 @@
+{
+  "reporter": ["text", "html"],
+  "all": true,
+  "include": ["src"],
+  "exclude": ["dist", "test"],
+  "reportDir": "coverage/nyc"
+}
