@@ -1,7 +1,14 @@
 {
   "name": "prettier-plugin-pgn",
   "version": "1.0.0-beta.1",
-  "description": "Prettier PGN plugin",
+  "description": "A Prettier plugin for formatting PGN files",
+  "keywords": [
+    "prettier",
+    "prettier-plugin",
+    "pgn",
+    "chess",
+    "formatter"
+  ],
   "author": "Guillaume Masclet",
   "license": "MIT",
   "repository": {
