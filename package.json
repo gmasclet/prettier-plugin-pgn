@@ -1,6 +1,6 @@
 {
   "name": "prettier-plugin-pgn",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0",
   "description": "A Prettier plugin for formatting PGN files",
   "keywords": [
     "prettier",
